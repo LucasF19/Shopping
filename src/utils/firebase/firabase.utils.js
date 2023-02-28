@@ -6,6 +6,8 @@ import {
   GoogleAuthProvider,
 } from "firebase/auth";
 
+import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore'
+
 const firebaseConfig = {
   apiKey: "AIzaSyC4D1YUBZqFVpy2-51l41jbmFTlmxMcFxg",
   authDomain: "shopping-delivery-2d185.firebaseapp.com",
@@ -19,9 +21,34 @@ const fireBaseApp = initializeApp(firebaseConfig);
 
 const provider = new GoogleAuthProvider()
 
+const db = getFirestore()
+
 provider.setCustomParameters({
   prompt: 'select_account'
 });
 
 export const auth = getAuth()
+
 export const signInWithGooglePopup = () => signInWithPopup(auth, provider)
+
+export const creactUseDocument = async (userAuth) => {
+  const userDocRef = doc(db, 'users', userAuth.uid)
+  const snapShot = await getDoc(userDocRef)
+
+  if(!snapShot.exists()){
+    const { displayName, email } = userAuth;
+    const createAt = new Date();
+
+    try{
+      await setDoc(userDocRef, {
+        displayName,
+        email,
+        createAt,
+      });
+    } catch (error) {
+      console.log('Erro ao criar o usuário', error.message);
+    }
+
+    return userDocRef;
+  }
+}
