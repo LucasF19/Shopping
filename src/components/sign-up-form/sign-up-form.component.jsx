@@ -39,10 +39,9 @@ const SignUpForm = () => {
       await creactUseDocument(user, { displayName })
 
       resetFields()
-
     } catch(error){
       if(error.code === "auth/email-already-in-use"){
-        alert("Email já está em uso!")
+        alert("Email já existe!")
       }
 
       console.log('Error', error);
